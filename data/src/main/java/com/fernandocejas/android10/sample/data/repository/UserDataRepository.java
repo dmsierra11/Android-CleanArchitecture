@@ -15,15 +15,24 @@
  */
 package com.fernandocejas.android10.sample.data.repository;
 
+import android.util.Log;
+
 import com.fernandocejas.android10.sample.data.entity.mapper.UserEntityDataMapper;
+import com.fernandocejas.android10.sample.data.exception.UserNotFoundException;
 import com.fernandocejas.android10.sample.data.repository.datasource.UserDataStore;
 import com.fernandocejas.android10.sample.data.repository.datasource.UserDataStoreFactory;
+import com.fernandocejas.android10.sample.domain.LoginResponse;
 import com.fernandocejas.android10.sample.domain.User;
 import com.fernandocejas.android10.sample.domain.repository.UserRepository;
 import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * {@link UserRepository} for retrieving user data.
@@ -56,5 +65,19 @@ public class UserDataRepository implements UserRepository {
   @Override public Observable<User> user(int userId) {
     final UserDataStore userDataStore = this.userDataStoreFactory.create(userId);
     return userDataStore.userEntityDetails(userId).map(this.userEntityDataMapper::transform);
+  }
+
+  @Override
+  public Observable<LoginResponse> authenticateUser(String username, String password) {
+    //TODO: Do the actual request in data layer
+    return Observable.create(emitter -> {
+      boolean success = true;
+      if (success) {
+        emitter.onNext(new LoginResponse("success", 200));
+        emitter.onComplete();
+      } else {
+        emitter.onError(new UserNotFoundException());
+      }
+    });
   }
 }

@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import com.fernandocejas.android10.sample.presentation.internal.di.components.UserComponent;
 import com.fernandocejas.android10.sample.presentation.model.UserModel;
 import com.fernandocejas.android10.sample.presentation.R;
-import com.fernandocejas.android10.sample.presentation.presenter.LoginPresenter;
+import com.fernandocejas.android10.sample.presentation.presenter.LoginPresenterImpl;
 import com.fernandocejas.android10.sample.presentation.view.LoginView;
 
 import javax.inject.Inject;
@@ -26,10 +27,15 @@ public class LoginFragment extends BaseFragment implements LoginView {
         void onUserValidated(UserModel userModel);
     }
 
-    @Inject LoginPresenter loginPresenter;
+    @Inject
+    LoginPresenterImpl loginPresenterImpl;
 
     @Bind(R.id.login_progress)
     ProgressBar progressBar;
+    @Bind(R.id.email)
+    EditText email;
+    @Bind(R.id.password)
+    EditText password;
 
     private OnFragmentInteractionListener mListener;
 
@@ -63,17 +69,17 @@ public class LoginFragment extends BaseFragment implements LoginView {
 
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        this.loginPresenter.setView(this);
+        this.loginPresenterImpl.setView(this);
     }
 
     @Override public void onResume() {
         super.onResume();
-        this.loginPresenter.resume();
+        this.loginPresenterImpl.resume();
     }
 
     @Override public void onPause() {
         super.onPause();
-        this.loginPresenter.pause();
+        this.loginPresenterImpl.pause();
     }
 
     @Override public void onDestroyView() {
@@ -83,7 +89,7 @@ public class LoginFragment extends BaseFragment implements LoginView {
 
     @Override public void onDestroy() {
         super.onDestroy();
-        this.loginPresenter.destroy();
+        this.loginPresenterImpl.destroy();
     }
 
     @Override
@@ -94,7 +100,7 @@ public class LoginFragment extends BaseFragment implements LoginView {
 
     @Override
     public void userValidated() {
-
+        mListener.onUserValidated(null);
     }
 
     @Override
@@ -136,7 +142,6 @@ public class LoginFragment extends BaseFragment implements LoginView {
 
     @OnClick(R.id.email_sign_in_button)
     public void signIn(){
-        showToastMessage("Validate user");
-        this.loginPresenter.validateUser();
+        this.loginPresenterImpl.validateUser(email.getText().toString(), password.getText().toString());
     }
 }
